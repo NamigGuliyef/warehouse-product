@@ -9,18 +9,19 @@ import { Model } from 'mongoose';
 import { SignUpDto } from './dtos/signup.dto';
 import { Product } from './schema/product.schema';
 import { LoginDto } from './dtos/login.dto';
+import { JwtService } from '@nestjs/jwt'
 
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectModel(Product.name) private ProductModel: Model<Product>,
-  ) {}
+    @InjectModel(Product.name) private ProductModel: Model<Product>, private jwtService: JwtService
+  ) { }
 
   async signup(signupData: SignUpDto) {
     const { name, email } = signupData;
     //  email yoxla
     const emailExist = await this.ProductModel.findOne({
-      email: signupData.email,
+      email: signupData.email
     });
     if (emailExist) throw new BadRequestException('Email artıq mövcuddur');
     // şifrə hash etmək
@@ -41,7 +42,8 @@ export class AuthService {
     // Şifrə yoxlanılır
     const comparePass = await bcrypt.compare(password, product.password);
     if (!comparePass) throw new UnauthorizedException('Şifrə doğru deyil');
-    // Token alınır
-    return { message: 'success' };
+    // Token alınıre
+    const token = this.jwtService.sign({ _id: product._id, email }, { expiresIn: '1h' })
+    return { token }
   }
 }
