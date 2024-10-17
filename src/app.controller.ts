@@ -9,8 +9,6 @@ export class AppController {
 
   @Get()
   ProtectedRoute(@Req() request) {    
-    console.log(request);
-    
     return { message: "Access", userId: request.userId}
   };
 }

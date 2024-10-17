@@ -51,7 +51,7 @@ export class AuthService {
   }
 
   async generateUserToken(_id) {
-    const token = this.jwtService.sign({ _id }, { expiresIn: '1h' })
+    const token = this.jwtService.sign({ _id }, { expiresIn: 30 })
     const refreshToken = uuidv4()
     const expiryDate = new Date()
     expiryDate.setDate(expiryDate.getDate() + 3)
