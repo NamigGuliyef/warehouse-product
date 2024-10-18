@@ -1,14 +1,18 @@
-import { Controller, Get, Req, UseGuards } from '@nestjs/common';
-import { AppService } from './app.service';
-import { AuthGuard } from './auth/auth.guard';
+import { Body, Controller, Post } from '@nestjs/common';
+import { ClientProxyFactory, Transport } from '@nestjs/microservices';
+import { lastValueFrom } from 'rxjs';
 
-@UseGuards(AuthGuard)
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) { }
+  private client = ClientProxyFactory.create({
+    transport: Transport.TCP,
+    options: { port: 4001 },
+  });
 
-  @Get()
-  ProtectedRoute(@Req() request) {    
-    return { message: "Access", userId: request.userId}
-  };
+  @Post('add')
+  async createProduct(@Body() name: string, price: string) {
+    return await lastValueFrom(
+      this.client.send('add_product', { name, price }),
+    );
+  }
 }

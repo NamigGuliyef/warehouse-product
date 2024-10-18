@@ -5,10 +5,8 @@ import { Document } from 'mongoose';
 export class Product extends Document {
   @Prop({ required: true })
   name: string;
-  @Prop({ required: true, unique: true })
-  email: string;
   @Prop({ required: true })
-  password: string;
+  price: string;
 }
 
 export const productSchema = SchemaFactory.createForClass(Product);
